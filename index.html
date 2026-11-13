@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Goal Express — Today's African Matches</title>
+
+  <!-- Google Tag Manager / Analytics -->
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-N2CSRQDT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #131b2e;
+      --border: #23304d;
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.35);
+      --gold: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: radial-gradient(circle at top, #16223d 0%, var(--bg) 75%); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 14px; overflow-x: hidden; }
+    .container { width: 100%; max-width: 480px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(19, 27, 46, 0.9); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 14px; backdrop-filter: blur(8px); }
+    .logo { font-weight: 900; font-size: 16px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+    .logo span { color: var(--accent); }
+    .live-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 99px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 7px; height: 7px; background: #10b981; border-radius: 50%; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+
+    .hero { text-align: center; margin-bottom: 16px; padding: 0 4px; }
+    .hero h1 { font-size: 21px; font-weight: 900; line-height: 1.25; margin-bottom: 6px; }
+    .hero p { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+
+    .match-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .match-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--gold); font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .team { flex: 1; text-align: center; }
+    .flag { font-size: 32px; display: block; margin-bottom: 4px; }
+    .team-name { font-weight: 800; font-size: 14px; line-height: 1.2; }
+    .vs { font-size: 11px; font-weight: 800; color: var(--muted); background: #0f1626; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); }
+
+    .pick-label { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 8px; font-weight: 600; }
+    .btns-grid { display: grid; grid-template-columns: 1fr 0.8fr 1fr; gap: 8px; }
+    .pick-btn { background: #0f1626; border: 1px solid var(--border); color: var(--text); padding: 12px 6px; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 12.5px; transition: all 0.15s; text-align: center; line-height: 1.2; }
+    .pick-btn:hover, .pick-btn:active { background: var(--accent); color: #04130d; border-color: var(--accent); transform: scale(0.98); box-shadow: 0 4px 15px var(--accent-glow); }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(5, 8, 15, 0.9); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 999; }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: linear-gradient(180deg, #18233c 0%, #0f1626 100%); border: 2px solid var(--accent); border-radius: 22px; padding: 24px 18px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 40px var(--accent-glow); position: relative; animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .trophy { font-size: 50px; margin-bottom: 6px; display: inline-block; animation: bounce 0.9s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+    .modal h2 { font-size: 21px; font-weight: 900; color: #fff; margin-bottom: 6px; text-transform: uppercase; }
+    .bonus-box { background: rgba(16, 185, 129, 0.12); border: 1px dashed var(--accent); border-radius: 14px; padding: 14px; margin: 14px 0; }
+    .bonus-amount { font-size: 20px; font-weight: 900; color: var(--accent); display: block; margin-bottom: 6px; line-height: 1.25; }
+    .bonus-sub { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
+    .cta-btn { display: block; width: 100%; background: linear-gradient(90deg, #10b981, #059669); color: #fff; font-weight: 900; font-size: 15px; padding: 16px; border-radius: 14px; text-decoration: none; text-transform: uppercase; letter-spacing: 0.4px; box-shadow: 0 8px 25px var(--accent-glow); margin-top: 12px; cursor: pointer; border: none; }
+    .cta-btn:active { transform: scale(0.97); }
+    .timer { font-size: 12px; color: var(--gold); margin-top: 10px; font-weight: 700; }
+
+    canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <div class="topbar">
+      <div class="logo">⚽ GOAL <span>EXPRESS</span></div>
+      <div class="live-badge"><div class="dot"></div> <span id="t-live">AFCON QUALIFIERS • TODAY</span></div>
+    </div>
+
+    <div class="hero">
+      <h1 id="t-title">Pick Today's Winner & Unlock a Risk-Free Bet!</h1>
+      <p id="t-subtitle">Tap who will win any match below to claim your welcome Freebet & bonus.</p>
+    </div>
+
+    <div id="matches-container"></div>
+  </div>
+
+  <!-- Reward Modal -->
+  <div class="modal-overlay" id="rewardModal">
+    <div class="modal">
+      <div class="trophy">🏆</div>
+      <h2 id="m-congrats">YOU WON A FREEBET!</h2>
+      <p id="m-picked" style="font-size:13px; color:#94a3b8;"></p>
+      <div class="bonus-box">
+        <span class="bonus-amount" id="m-bonus-title"></span>
+        <span class="bonus-sub" id="m-bonus-desc"></span>
+      </div>
+      <a href="#" id="m-cta" class="cta-btn">CLAIM BONUS & BET NOW</a>
+      <div class="timer" id="m-timer">⏳ Bonus reserved for 04:59</div>
+    </div>
+  </div>
+
+  <script>
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? match[2] : null;
+    }
+
+    let country = (getCookie('ge_country') || '').toUpperCase();
+    if (!country) {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (tz.includes('Lagos')) country = 'NG';
+      else if (tz.includes('Douala') || tz.includes('Antananarivo')) country = 'CM';
+      else if (tz.includes('Luanda') || tz.includes('Sao_Paulo')) country = 'AO';
+      else country = 'GLOBAL';
+    }
+
+    const OFFERS = {
+      NG: {
+        url: "https://click.bf-tracking.tech/lBA9OjRp?landing=818",
+        brand: "BetFM",
+        lang: "en",
+        bonusTitle: "100% FIRST DEPOSIT BONUS + 100 FREE SPINS & RISK-FREE BET",
+        bonusDesc: "Sign up on BetFM, make your first deposit & place your match prediction completely risk-free + get 100 Free Spins!"
+      },
+      FR_AFRICA: {
+        url: "https://goalexpress.megapari-952513.com",
+        brand: "Megapari",
+        lang: "fr",
+        bonusTitle: "FREEBET SANS RISQUE SUR VOTRE 1ER DÉPÔT (JUSQU'À 65 000 XAF)",
+        bonusDesc: "Déposez n'importe quel montant sur Megapari et recevez un Freebet sans risque sur votre premier pari + des bonus exclusifs !"
+      },
+      PT_AFRICA: {
+        url: "https://goalexpress.megapari-952513.com",
+        brand: "Megapari",
+        lang: "pt",
+        bonusTitle: "FREEBET SEM RISCO NO 1º DEPÓSITO (ATÉ 95.000 AOA / R$ 600)",
+        bonusDesc: "Faça seu primeiro depósito de qualquer valor na Megapari e ganhe uma Freebet sem risco na sua primeira aposta + bônus extras!"
+      },
+      EN_GLOBAL: {
+        url: "https://goalexpress.megapari-952513.com",
+        brand: "Megapari",
+        lang: "en",
+        bonusTitle: "RISK-FREE FREEBET ON YOUR FIRST DEPOSIT + EXTRA BONUSES",
+        bonusDesc: "Deposit any amount on Megapari and get a Freebet for your first risk-free match bet plus extra welcome bonuses!"
+      }
+    };
+
+    const frCountries = ["CM", "MG", "CI", "SN", "ML", "BF", "NE", "TG", "BJ", "GN", "CD", "CG", "GA"];
+    const ptCountries = ["AO", "BR", "MZ", "CV", "GW"];
+
+    let activeOffer = OFFERS.EN_GLOBAL;
+    if (country === "NG") activeOffer = OFFERS.NG;
+    else if (frCountries.includes(country)) activeOffer = OFFERS.FR_AFRICA;
+    else if (ptCountries.includes(country)) activeOffer = OFFERS.PT_AFRICA;
+
+    const I18N = {
+      en: {
+        live: "TODAY'S MATCHES • LIVE",
+        title: "Pick Today's Winner & Unlock a Risk-Free Bet!",
+        subtitle: "Tap who will win any match below to claim your Freebet & welcome bonus.",
+        pickPrompt: "Choose match result:",
+        draw: "Draw",
+        congrats: "YOU WON A FREEBET!",
+        pickedPrefix: "Your pick:",
+        cta: "CLAIM BONUS & PLACE FREE BET",
+        timer: "⏳ Bonus reserved for"
+      },
+      fr: {
+        live: "MATCHS DU JOUR • DIRECT",
+        title: "Choisissez le gagnant et débloquez un Pari Sans Risque !",
+        subtitle: "Appuyez sur le résultat du match ci-dessous pour activer votre Freebet.",
+        pickPrompt: "Choisissez le résultat :",
+        draw: "Match Nul",
+        congrats: "VOUS AVEZ GAGNÉ UN FREEBET !",
+        pickedPrefix: "Votre choix :",
+        cta: "DÉPOSER ET PRENDRE LE FREEBET",
+        timer: "⏳ Bonus réservé pendant"
+      },
+      pt: {
+        live: "JOGOS DE HOJE • AO VIVO",
+        title: "Escolha o vencedor e ganhe uma Aposta Sem Risco!",
+        subtitle: "Toque no resultado abaixo para liberar sua Freebet de boas-vindas.",
+        pickPrompt: "Escolha o resultado:",
+        draw: "Empate",
+        congrats: "VOCÊ GANHOU UMA FREEBET!",
+        pickedPrefix: "Seu palpite:",
+        cta: "DEPOSITAR E PEGAR FREEBET",
+        timer: "⏳ Bônus reservado por"
+      }
+    };
+
+    const t = I18N[activeOffer.lang] || I18N.en;
+    document.getElementById("t-live").textContent = t.live;
+    document.getElementById("t-title").textContent = t.title;
+    document.getElementById("t-subtitle").textContent = t.subtitle;
+    document.getElementById("m-congrats").textContent = t.congrats;
+    document.getElementById("m-bonus-title").textContent = activeOffer.bonusTitle;
+    document.getElementById("m-bonus-desc").textContent = activeOffer.bonusDesc;
+    document.getElementById("m-cta").textContent = t.cta;
+    document.getElementById("m-cta").href = activeOffer.url;
+
+    const MATCHES = [
+      { league: "AFCON QUALIFIERS • GROUP L", time: "TODAY", t1: "Nigeria", f1: "🇳🇬", t2: "Tanzania", f2: "🇹🇿" },
+      { league: "AFCON QUALIFIERS • GROUP D", time: "TODAY", t1: "South Africa", f1: "🇿🇦", t2: "Kenya", f2: "🇰🇪" },
+      { league: "AFCON QUALIFIERS • GROUP B", time: "TODAY", t1: "Egypt", f1: "🇪🇬", t2: "Malawi", f2: "🇲🇼" },
+      { league: "AFCON QUALIFIERS • GROUP A", time: "TODAY", t1: "Morocco", f1: "🇲🇦", t2: "Niger", f2: "🇳🇪" },
+      { league: "AFCON QUALIFIERS • GROUP A", time: "TODAY", t1: "Gabon", f1: "🇬🇦", t2: "Lesotho", f2: "🇱🇸" },
+      { league: "AFCON QUALIFIERS • GROUP K", time: "TODAY", t1: "Cape Verde", f1: "🇨🇻", t2: "Liberia", f2: "🇱🇷" },
+      { league: "AFCON QUALIFIERS • GROUP K", time: "TODAY", t1: "Mali", f1: "🇲🇱", t2: "Rwanda", f2: "🇷🇼" },
+      { league: "AFCON QUALIFIERS • GROUP H", time: "TODAY", t1: "Tunisia", f1: "🇹🇳", t2: "Libya", f2: "🇱🇾" },
+      { league: "AFCON QUALIFIERS • GROUP F", time: "TODAY", t1: "Burkina Faso", f1: "🇧🇫", t2: "Mauritania", f2: "🇲🇷" },
+      { league: "AFCON QUALIFIERS • GROUP G", time: "LIVE / TODAY", t1: "Comoros", f1: "🇰🇲", t2: "Congo", f2: "🇨🇬" },
+      { league: "AFCON QUALIFIERS • GROUP I", time: "LIVE / TODAY", t1: "Zambia", f1: "🇿🇲", t2: "Burundi", f2: "🇧🇮" },
+      { league: "AFCON QUALIFIERS • GROUP J", time: "LIVE / TODAY", t1: "Mozambique", f1: "🇲🇿", t2: "Ethiopia", f2: "🇪🇹" }
+    ];
+
+    const container = document.getElementById("matches-container");
+    MATCHES.forEach(m => {
+      const card = document.createElement("div");
+      card.className = "match-card";
+      card.innerHTML = `
+        <div class="match-meta">
+          <span>${m.league}</span>
+          <span>${m.time}</span>
+        </div>
+        <div class="teams">
+          <div class="team"><span class="flag">${m.f1}</span><div class="team-name">${m.t1}</div></div>
+          <div class="vs">VS</div>
+          <div class="team"><span class="flag">${m.f2}</span><div class="team-name">${m.t2}</div></div>
+        </div>
+        <div class="pick-label">${t.pickPrompt}</div>
+        <div class="btns-grid">
+          <button class="pick-btn" onclick="triggerWin('${m.t1} vs ${m.t2} — ${m.t1}')">${m.t1}</button>
+          <button class="pick-btn" onclick="triggerWin('${m.t1} vs ${m.t2} — ${t.draw}')">${t.draw}</button>
+          <button class="pick-btn" onclick="triggerWin('${m.t1} vs ${m.t2} — ${m.t2}')">${m.t2}</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    function playWinSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+          gain.gain.setValueAtTime(0.24, ctx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.08);
+          osc.stop(ctx.currentTime + i * 0.08 + 0.45);
+        });
+      } catch (e) {}
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const pieces = Array.from({ length: 95 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        c: ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#ffffff"][Math.floor(Math.random() * 5)],
+        v: Math.random() * 4.5 + 2
+      }));
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          ctx.fillStyle = p.c;
+          ctx.fillRect(p.x, p.y, p.r, p.r * 1.4);
+          p.y += p.v;
+        });
+        if (++frames < 140) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    }
+
+    let timerStarted = false;
+    function triggerWin(pickLabel) {
+      playWinSound();
+      launchConfetti();
+      document.getElementById("m-picked").textContent = `${t.pickedPrefix} ${pickLabel}`;
+      document.getElementById("rewardModal").classList.add("active");
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "prediction_made",
+        offer_brand: activeOffer.brand,
+        user_country: country,
+        match_pick: pickLabel
+      });
+
+      if (!timerStarted) {
+        timerStarted = true;
+        let sec = 299;
+        setInterval(() => {
+          if (sec > 0) sec--;
+          const m = String(Math.floor(sec / 60)).padStart(2, "0");
+          const s = String(sec % 60).padStart(2, "0");
+          document.getElementById("m-timer").textContent = `${t.timer} ${m}:${s}`;
+        }, 1000);
+      }
+    }
+
+    document.getElementById("m-cta").addEventListener("click", (e) => {
+      e.preventDefault();
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "offer_click",
+        offer_brand: activeOffer.brand,
+        user_country: country
+      });
+      setTimeout(() => {
+        window.location.href = activeOffer.url;
+      }, 120);
+    });
+  </script>
+</body>
+</html>
